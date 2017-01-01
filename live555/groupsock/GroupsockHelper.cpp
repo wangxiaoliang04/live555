@@ -744,6 +744,8 @@ static LONG initializeLock_gettimeofday = 0;
 #include <sys/timeb.h>
 #endif
 
+//会把目前的时间用tv 结构体返回，当地时区的信息则放到tz所指的结构中;
+//获得当前精确时间（1970年1月1日到现在的时间）,它的精度可以达到微妙;
 int gettimeofday(struct timeval* tp, int* /*tz*/) {
   static LARGE_INTEGER tickFrequency, epochOffset;
 
