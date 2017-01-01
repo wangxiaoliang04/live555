@@ -131,7 +131,9 @@ extern EventTime const THE_END_OF_TIME;
 
 
 ///// DelayQueueEntry /////
-
+//整个延时队列是用DelayQueue这个类实现的，而它的基类DelayQueueEntry就是用来描述每个事件节点的。
+//在DelayQueueEntry中的主要成员有以下几个：fDelayTimeRemaining表示的就是与前一事件之间的时间差；
+//fNext和fPrev就是指向时间轴上的下一个事件和前一个事件的指针；ftoken表示当前节点的标识；handleTimeout就是事件超时后的处理方法。
 class DelayQueueEntry {
 public:
   virtual ~DelayQueueEntry();
@@ -156,7 +158,13 @@ private:
 };
 
 ///// DelayQueue /////
-
+//而DelayQueue类里描述的则是具体的实现方法。首先是一些对这个队列进行的基本操作：
+//addEntry实现的是在队列中增加事件节点；removeEntry实现的是在队列中删除某事件节点；
+//updateEntry实现的则是更新某事件的触发时间；而findEntryByToken则是根据节点的标识查找相应的事件。
+//在此类中最常用的方法应该是synchronize，它实现的就是将整个事件队列和当前系统时间进行同步，
+//检测有无事件已经被触发，如果触发并调用handleAlarm方法对相应事件进行处理。
+//而属性fLastSyncTime表示的就是上次同步的系统时间，其实一般情况下，
+//方法synchronize的实现方法其实就是简单地把队列上第一个事件节点存储的时间差减去当前系统时间和上次同步时间的差。
 class DelayQueue: public DelayQueueEntry {
 public:
   DelayQueue();

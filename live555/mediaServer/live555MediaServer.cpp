@@ -23,7 +23,9 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 
 int main(int argc, char** argv) {
   // Begin by setting up our usage environment:
+  //创建任务调用器;
   TaskScheduler* scheduler = BasicTaskScheduler::createNew();
+  //创建交互环境;
   UsageEnvironment* env = BasicUsageEnvironment::createNew(*scheduler);
 
   UserAuthenticationDatabase* authDB = NULL;
@@ -39,10 +41,11 @@ int main(int argc, char** argv) {
   // and then with the alternative port number (8554):
   RTSPServer* rtspServer;
   portNumBits rtspServerPortNum = 554;
+  //创建RTSP服务器
   rtspServer = DynamicRTSPServer::createNew(*env, rtspServerPortNum, authDB);
   if (rtspServer == NULL) {
     rtspServerPortNum = 8554;
-    rtspServer = DynamicRTSPServer::createNew(*env, rtspServerPortNum, authDB);
+    rtspServer = DynamicRTSPServer::createNew(*env, rtspServerPortNum, authDB);  //554端口被占用，就使用8554端口
   }
   if (rtspServer == NULL) {
     *env << "Failed to create RTSP server: " << env->getResultMsg() << "\n";
@@ -54,6 +57,7 @@ int main(int argc, char** argv) {
        << " (LIVE555 Streaming Media library version "
        << LIVEMEDIA_LIBRARY_VERSION_STRING << ").\n";
 
+  //打印服务器地址;
   char* urlPrefix = rtspServer->rtspURLPrefix();
   *env << "Play streams from this server using the URL\n\t"
        << urlPrefix << "<filename>\nwhere <filename> is a file present in the current directory.\n";
@@ -86,6 +90,7 @@ int main(int argc, char** argv) {
     *env << "(RTSP-over-HTTP tunneling is not available.)\n";
   }
 
+  //进行事件循环;
   env->taskScheduler().doEventLoop(); // does not return
 
   return 0; // only to prevent compiler warning
