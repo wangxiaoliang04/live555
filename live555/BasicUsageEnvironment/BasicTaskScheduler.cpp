@@ -214,7 +214,7 @@ void BasicTaskScheduler::SingleStep(unsigned maxDelayTime) {
   // Also handle any delayed event that may have come due.
   fDelayQueue.handleAlarm();
 }
-
+//根据第二个参数 int conditionSet 是否为零 对应于插入和删除节点的操作;
 void BasicTaskScheduler
   ::setBackgroundHandling(int socketNum, int conditionSet, BackgroundHandlerProc* handlerProc, void* clientData) {
   if (socketNum < 0) return;
