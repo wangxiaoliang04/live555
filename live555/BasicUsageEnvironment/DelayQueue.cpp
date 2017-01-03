@@ -124,14 +124,18 @@ DelayQueue::~DelayQueue() {
 }
 
 void DelayQueue::addEntry(DelayQueueEntry* newEntry) {
+  // 重新计算各项的等待时间;
   synchronize();
 
+  // 取得第一项;
   DelayQueueEntry* cur = head();
+  // 从头至尾循环中将新项与各项的等待时间进行比较;
   while (newEntry->fDeltaTimeRemaining >= cur->fDeltaTimeRemaining) {
+    // 如果新项等待时间长于当前项的等待时间，则减掉当前项的等待时间;
     newEntry->fDeltaTimeRemaining -= cur->fDeltaTimeRemaining;
     cur = cur->fNext;
   }
-
+  //循环完毕，cur 就是找到的应插它前面的项，那就插它前面吧;
   cur->fDeltaTimeRemaining -= newEntry->fDeltaTimeRemaining;
 
   // Add "newEntry" to the queue, just before "cur":
@@ -177,13 +181,14 @@ DelayInterval const& DelayQueue::timeToNextAlarm() {
 }
 
 void DelayQueue::handleAlarm() {
+	//如果第一个任务的执行时间未到，则同步一下（重新计算各任务的等待时间）。
   if (head()->fDeltaTimeRemaining != DELAY_ZERO) synchronize();
-
+  //如果第一个任务的执行时间到了，则执行第一个，并把它从队列中删掉;
   if (head()->fDeltaTimeRemaining == DELAY_ZERO) {
     // This event is due to be handled:
     DelayQueueEntry* toRemove = head();
     removeEntry(toRemove); // do this first, in case handler accesses queue
-
+	//执行任务，执行完后会把这一项销毁;
     toRemove->handleTimeout();
   }
 }
